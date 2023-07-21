@@ -4,11 +4,12 @@ const request = require('request');
 const cors = require('cors');
 
 const port = 3333
+const front_port = 5173;
 
 const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 
-
+let access_token, refresh_token;
 
 const generateRandomString = (length) => {
   let text = '';
@@ -66,18 +67,19 @@ app.get('/auth/callback', (req, res) => {
 
   request.post(authOptions, function(error, response, body) {
     if (!error && response.statusCode === 200) {
-      const access_token = body.access_token;
-      console.log(access_token);
-      res.redirect('/')
+      access_token = body.access_token;
+      refresh_token = body.refresh_token;
+
+      res.redirect('http://localhost:5173/')
     }
   });
 })
 
 app.get('/auth/token', (req, res) => {
   res.json(
-     {
-        access_token: access_token
-     })
+    {
+       access_token: access_token
+    })
 })
 
 app.listen(port, () => {
